@@ -1,40 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-white">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/styles/output.css" />
     <title>Odin Drive</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.625rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background-color: #2563eb;
+        color: white;
+      }
+      .btn-primary:hover {
+        background-color: #1d4ed8;
+      }
+      .btn-outline {
+        border: 1px solid #e5e7eb;
+        color: #374151;
+      }
+      .btn-outline:hover {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
+      }
+    </style>
   </head>
 
-  <body>
+  <body class="min-h-screen">
     <%- include("partials/nav") %>
-    <div class="flex flex-col items-center justify-center h-[calc(100vh-70px)]">
-      <h1 class="text-3xl font-bold">Odin Drive</h1>
-      <p class="text-lg">Odin Drive is a file storage service</p>
-      <%= currentUser && "Hello " + currentUser.username %> <%= !currentUser ?
-      "Sign in first to upload files" : "" %> <% if (!currentUser) { %>
-      <div class="flex gap-2 mt-4">
-        <a
-          href="/auth/login"
-          class="p-2 border border-gray-200 rounded bg-blue-500 text-white transition-all ease-in-out hover:bg-blue-600 hover:text-white cursor-pointer"
-          >Login</a
-        >
-        <a
-          href="/auth/register"
-          class="p-2 border border-gray-200 rounded bg-white text-blue-500 transition-all ease-in-out hover:bg-blue-600 hover:text-white cursor-pointer"
-          >Register</a
-        >
+
+    <div class="max-w-md mx-auto px-4 py-16 sm:py-24">
+      <div class="text-center">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Odin Drive</h1>
+        <p class="text-gray-600 mb-8">Your files, everywhere you are</p>
+
+        <% if (currentUser) { %>
+        <div class="space-y-4">
+          <p class="text-gray-700">
+            Welcome back,
+            <span class="font-medium"><%= currentUser.username %></span>
+          </p>
+          <a href="/folders" class="btn btn-primary"> View Your Files </a>
+        </div>
+        <% } else { %>
+        <div class="space-y-4">
+          <a href="/auth/login" class="btn btn-primary"> Sign In </a>
+          <a href="/auth/register" class="btn btn-outline"> Create Account </a>
+        </div>
+        <% } %>
       </div>
-      <% } %> <% if (currentUser) { %>
-      <div class="flex gap-2 mt-4">
-        <a
-          href="/folders"
-          class="p-2 border border-gray-200 rounded bg-blue-500 text-white transition-all ease-in-out hover:bg-blue-600 hover:text-white cursor-pointer"
-          >View Folders</a
-        >
-      </div>
-      <% } %>
     </div>
   </body>
 </html>

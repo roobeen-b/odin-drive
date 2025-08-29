@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload File - Odin Drive</title>
+    <link rel="stylesheet" href="/styles/output.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="h-full bg-gray-50">
+    <%- include("partials/nav") %>
+
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-end mb-6">
+        <button
+          onclick="window.history.back()"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+        >
+          <svg
+            class="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Back to Folder
+        </button>
+      </div>
+
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Upload Files
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            Click "Upload a file" button to browse and upload files
+          </p>
+        </div>
+
+        <div class="px-4 py-5 sm:p-6">
+          <form method="post" id="uploadForm" enctype="multipart/form-data">
+            <div class="dz-message">
+              <div class="text-center">
+                <svg
+                  class="mx-auto h-12 w-12 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">
+                  <label
+                    for="file-upload"
+                    class="relative cursor-pointer rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none"
+                  >
+                    <span>Upload a file</span>
+                    <input
+                      id="file-upload"
+                      name="file"
+                      type="file"
+                      class="sr-only"
+                      multiple
+                    />
+                  </label>
+                </h3>
+                <p class="mt-1 text-xs text-gray-500">
+                  Supported formats: PNG, JPG, JPEG, GIF, PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT
+                  <br>Max file size: 10MB
+                </p>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                onclick="window.history.back()"
+                class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="uploadForm"
+                id="submitButton"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                Upload Files
+              </button>
+              <button
+                id="loadingIndicator"
+                style="display: none"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600"
+              >
+                Uploading...
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div
+        class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg"
+        id="upload-progress"
+        style="display: none"
+      >
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Upload Progress
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+          <div class="space-y-4" id="file-list">
+            <!-- Files being uploaded will appear here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let selectedFiles = [];
+
+      function removeFile(fileId, fileName) {
+        const fileItem = document.getElementById(fileId);
+        if (fileItem) {
+          fileItem.remove();
+
+          const dataTransfer = new DataTransfer();
+          const fileInput = document.querySelector('input[type="file"]');
+          const { files } = fileInput;
+
+          for (let i = 0; i < files.length; i++) {
+            if (files[i].name !== fileName) {
+              dataTransfer.items.add(files[i]);
+            }
+          }
+
+          fileInput.files = dataTransfer.files;
+
+          const fileList = document.getElementById("file-list");
+          if (fileList.children.length === 0) {
+            document.getElementById("upload-progress").style.display = "none";
+          }
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.querySelector('input[type="file"]');
+        const uploadForm = document.getElementById("uploadForm");
+        const uploadProgress = document.getElementById("upload-progress");
+        const fileList = document.getElementById("file-list");
+
+        fileInput.addEventListener("change", function (e) {
+          handleFiles(e.target.files);
+        });
+
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        function handleFiles(files) {
+          if (files.length > 0) {
+            uploadProgress.style.display = "block";
+            fileList.innerHTML = "";
+
+            Array.from(files).forEach((file) => {
+              const fileItem = document.createElement("div");
+              const fileId = "file-" + Math.random().toString(36).substr(2, 9);
+              fileItem.className =
+                "flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded-md";
+              fileItem.id = fileId;
+              fileItem.innerHTML = `
+                <div class="flex items-center">
+                  <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="ml-2 text-sm font-medium text-gray-900 truncate max-w-xs">${
+                    file.name
+                  }</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <span class="text-sm text-gray-500">${formatFileSize(
+                    file.size
+                  )}</span>
+                  <button type="button" onclick="removeFile('${fileId}', '${
+                file.name
+              }')" class="text-red-500 hover:text-red-700 focus:outline-none">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              `;
+              fileList.appendChild(fileItem);
+            });
+
+            fileInput.files = files;
+          }
+        }
+
+        function formatFileSize(bytes) {
+          if (bytes === 0) return "0 Bytes";
+          const k = 1024;
+          const sizes = ["Bytes", "KB", "MB", "GB"];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return (
+            parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+          );
+        }
+
+        document
+          .getElementById("uploadForm")
+          .addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const submitButton = document.getElementById("submitButton");
+            const loadingIndicator =
+              document.getElementById("loadingIndicator");
+
+            submitButton.style.display = "none";
+            loadingIndicator.style.display = "block";
+
+            const formData = new FormData(this);
+
+            try {
+              const folderId = '<%= folderId || "" %>';
+              const response = await fetch(
+                `/files/${folderId}/upload-file`,
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
+
+              if (response.ok) {
+                const result = await response.json();
+                // Show success message and redirect after a short delay
+                const successMessage = document.createElement('div');
+                successMessage.className = 'mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded relative';
+                successMessage.role = 'alert';
+                successMessage.innerHTML = 'Files uploaded successfully! Redirecting...';
+                document.querySelector('.max-w-4xl').prepend(successMessage);
+                
+                setTimeout(() => {
+                  window.location.href = folderId ? `/folders/${folderId}` : '/';
+                }, 1500);
+              } else {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.message || 'Upload failed. Please try again.';
+                
+                const errorAlert = document.createElement('div');
+                errorAlert.className = 'mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative';
+                errorAlert.role = 'alert';
+                errorAlert.innerHTML = `
+                  <strong>Error:</strong> ${errorMessage}
+                  <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+                    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <title>Close</title>
+                      <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                    </svg>
+                  </span>
+                `;
+                document.querySelector('.max-w-4xl').prepend(errorAlert);
+              }
+            } catch (error) {
+              const errorAlert = document.createElement('div');
+              errorAlert.className = 'mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative';
+              errorAlert.role = 'alert';
+              errorAlert.innerHTML = `
+                <strong>Network Error:</strong> Failed to connect to the server. Please check your connection and try again.
+                <span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+                  <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <title>Close</title>
+                    <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+                  </svg>
+                </span>
+              `;
+              document.querySelector('.max-w-4xl').prepend(errorAlert);
+            } finally {
+              submitButton.style.display = "block";
+              loadingIndicator.style.display = "none";
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload File - Odin Drive</title>
+    <link rel="stylesheet" href="/styles/output.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css"
+      type="text/css"
+    />
+    <style>
+      .dropzone {
+        border: 2px dashed #9ca3af;
+        border-radius: 0.5rem;
+        background: #f9fafb;
+        min-height: 200px;
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      .dropzone:hover {
+        border-color: #3b82f6;
+        background: #f3f4f6;
+      }
+      .dropzone .dz-message {
+        margin: 0;
+        text-align: center;
+      }
+      .dropzone .dz-preview {
+        margin: 0.5rem;
+      }
+
+      /* Style for progress bar */
+      .progress {
+        height: 4px;
+        margin-top: 5px;
+        background: #e2e8f0;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: #3b82f6;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      .file-item {
+        position: relative;
+        padding: 8px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        margin-bottom: 8px;
+      }
+
+      .remove-file {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        cursor: pointer;
+        color: #ef4444;
+      }
+    </style>
+  </head>
+  <body class="h-full bg-gray-50">
+    <%- include("partials/nav") %>
+
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-end mb-6">
+        <button
+          onclick="window.history.back()"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+        >
+          <svg
+            class="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Back to Folder
+        </button>
+      </div>
+
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Upload Files
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            Drag and drop files here or click to browse
+          </p>
+        </div>
+
+        <div class="px-4 py-5 sm:p-6">
+          <form
+            id="uploadForm"
+            method="post"
+            enctype="multipart/form-data"
+            class="dropzone"
+            id="file-upload"
+          >
+            <div class="dz-message">
+              <div class="text-center">
+                <svg
+                  class="mx-auto h-12 w-12 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">
+                  <label
+                    for="file-upload"
+                    class="relative cursor-pointer rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none"
+                  >
+                    <span>Upload a file</span>
+                    <input
+                      id="file-upload-input"
+                      name="files"
+                      type="file"
+                      class="sr-only"
+                      multiple
+                    />
+                  </label>
+                </h3>
+                <p class="mt-1 text-xs text-gray-500">
+                  PNG, JPG, PDF up to 10MB
+                </p>
+              </div>
+            </div>
+          </form>
+
+          <div class="mt-6 flex justify-end space-x-3">
+            <button
+              type="button"
+              onclick="window.history.back()"
+              class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="uploadButton"
+              class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            >
+              Upload Files
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg"
+        id="upload-progress"
+        style="display: none"
+      >
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Upload Progress
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6">
+          <div class="space-y-2" id="file-list">
+            <!-- Files being uploaded will appear here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Simple drag and drop upload with progress
+      document.addEventListener("DOMContentLoaded", function () {
+        const dropzone = document.querySelector(".dropzone");
+        const fileInput = document.querySelector('input[type="file"]');
+        const uploadForm = document.getElementById("uploadForm");
+        const uploadProgress = document.getElementById("upload-progress");
+        const fileList = document.getElementById("file-list");
+
+        // Handle file selection
+        fileInput.addEventListener("change", function (e) {
+          handleFiles(e.target.files);
+        });
+
+        // Handle drag and drop
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, preventDefaults, false);
+          document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, highlight, false);
+        });
+
+        ["dragleave", "drop"].forEach((eventName) => {
+          dropzone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+          dropzone.classList.add("border-primary-500", "bg-primary-50");
+        }
+
+        function unhighlight() {
+          dropzone.classList.remove("border-primary-500", "bg-primary-50");
+        }
+
+        dropzone.addEventListener("drop", handleDrop, false);
+
+        function handleDrop(e) {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          handleFiles(files);
+        }
+
+        function createFileItem(file) {
+          const fileId = "file-" + Math.random().toString(36).substr(2, 9);
+          const fileItem = document.createElement("div");
+          fileItem.className = "file-item relative p-3 bg-gray-50 rounded-lg";
+          fileItem.id = fileId;
+
+          fileItem.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center flex-1 min-w-0">
+                <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+                </svg>
+                <div class="ml-3 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">${
+                    file.name
+                  }</p>
+                  <div class="flex justify-between items-center mt-1">
+                    <span class="text-xs text-gray-500">${formatFileSize(
+                      file.size
+                    )}</span>
+                    <span class="text-xs text-gray-500">Pending</span>
+                  </div>
+                  <div class="progress mt-2">
+                    <div class="progress-bar" id="progress-${fileId}"></div>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="remove-file ml-2" data-file-id="${fileId}">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          `;
+
+          return { id: fileId, element: fileItem, file };
+        }
+
+        function handleFiles(files) {
+          if (!files || files.length === 0) return;
+
+          uploadProgress.style.display = "block";
+
+          if (!window.pendingFiles) {
+            window.pendingFiles = [];
+          }
+
+          Array.from(files).forEach((file) => {
+            const { id, element } = createFileItem(file);
+            fileList.appendChild(element);
+
+            // Store file reference with its ID
+            window.pendingFiles.push({
+              id,
+              file,
+              element,
+              progress: 0,
+            });
+
+            // Add remove handler
+            element
+              .querySelector(".remove-file")
+              .addEventListener("click", (e) => {
+                e.stopPropagation();
+                removeFile(id);
+              });
+          });
+        }
+
+        function removeFile(fileId) {
+          if (!window.pendingFiles) return;
+
+          // Remove from UI
+          const element = document.getElementById(fileId);
+          if (element) {
+            element.remove();
+          }
+
+          // Remove from pending files
+          window.pendingFiles = window.pendingFiles.filter(
+            (item) => item.id !== fileId
+          );
+
+          // Hide progress section if no files left
+          if (window.pendingFiles.length === 0) {
+            uploadProgress.style.display = "none";
+          }
+        }
+
+        function formatFileSize(bytes) {
+          if (bytes === 0) return "0 Bytes";
+          const k = 1024;
+          const sizes = ["Bytes", "KB", "MB", "GB"];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return (
+            parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+          );
+        }
+
+        // Handle upload button click
+        document
+          .getElementById("uploadButton")
+          .addEventListener("click", async function () {
+            const files = window.pendingFiles;
+            if (!files || files.length === 0) {
+              alert("Please select files to upload first.");
+              return;
+            }
+
+            const uploadButton = this;
+            const originalText = uploadButton.textContent;
+
+            try {
+              // Disable button and show loading state
+              uploadButton.disabled = true;
+              uploadButton.textContent = "Uploading...";
+              uploadButton.classList.add("opacity-75");
+
+              // Disable remove buttons during upload
+              document.querySelectorAll(".remove-file").forEach((btn) => {
+                btn.disabled = true;
+              });
+
+              // Create FormData and add files
+              const formData = new FormData();
+              files.forEach((item) => {
+                formData.append("files", item.file);
+              });
+
+              // Set up progress tracking
+              const xhr = new XMLHttpRequest();
+
+              xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                  const percentComplete = (e.loaded / e.total) * 100;
+                  // Update progress for each file
+                  files.forEach((item) => {
+                    const progressBar = document.querySelector(
+                      `#progress-${item.id} .progress-bar`
+                    );
+                    if (progressBar) {
+                      progressBar.style.width = `${percentComplete}%`;
+                    }
+                  });
+                }
+              };
+
+              xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  // Update status to completed
+                  files.forEach((item) => {
+                    const statusElement = document.querySelector(
+                      `#${item.id} .text-xs.text-gray-500:last-child`
+                    );
+                    if (statusElement) {
+                      statusElement.textContent = "Uploaded";
+                      statusElement.className =
+                        "text-xs text-green-600 font-medium";
+                    }
+                  });
+
+                  // Redirect after a short delay
+                  setTimeout(() => {
+                    window.location.href = `/folders/<%= folderId %>`;
+                  }, 1000);
+                } else {
+                  throw new Error("Upload failed");
+                }
+              };
+
+              xhr.onerror = function () {
+                throw new Error("Upload failed");
+              };
+
+              xhr.open("POST", `/files/<%= folderId %>/upload-file`, true);
+              xhr.send(formData);
+            } catch (error) {
+              console.error("Upload error:", error);
+              alert("Error uploading files. Please try again.");
+              uploadButton.disabled = false;
+              uploadButton.textContent = originalText;
+              uploadButton.classList.remove("opacity-75");
+
+              // Re-enable remove buttons
+              document.querySelectorAll(".remove-file").forEach((btn) => {
+                btn.disabled = false;
+              });
+            }
+          });
+
+        // Handle click on dropzone to trigger file input
+        document
+          .querySelector(".dropzone")
+          .addEventListener("click", function (e) {
+            if (
+              e.target === this ||
+              e.target.classList.contains("dz-message")
+            ) {
+              document.getElementById("file-upload-input").click();
+            }
+          });
+
+        // Handle file input change
+        document
+          .getElementById("file-upload-input")
+          .addEventListener("change", function (e) {
+            handleFiles(this.files);
+            this.value = ""; // Reset input to allow selecting the same file again
+          });
+      });
+    </script>
+  </body>
+</html>

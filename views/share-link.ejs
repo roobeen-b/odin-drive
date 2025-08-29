@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Link</title>
+    <link rel="stylesheet" href="/styles/output.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+</head>
+<body>
+    <%- include("partials/nav") %>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Share Link</h1>
+                <p class="mt-1 text-sm text-gray-500">
+                    Share your folder with others
+                </p>
+            </div>
+        </div>
+        <form action="/share/<%= folderId %>" method="post" class="flex flex-col items-center space-y-4 mb-4">
+            <label for="duration" class="text-sm font-medium text-gray-700">Duration:</label>
+            <select name="duration" id="duration" class="border border-gray-300 rounded px-2 py-1">
+                <option value="1d">1 day</option>
+                <option value="1w">1 week</option>
+                <option value="1m">1 month</option>
+                <option value="1y">1 year</option>
+            </select>
+            <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded">Create Share Link</button>
+        </form>
+        <% if (shareLinkUrl) { %>
+            <div class="flex flex-col items-center space-y-4 mt-4 border border-gray-300 p-2 rounded">Share Link: <div class="bg-gray-100 px-2 rounded">
+                <p class="text-sm text-gray-500 text-center"><%= shareLinkUrl %></p></div>
+                <button onclick="copyToClipboard('<%= shareLinkUrl %>')" class="bg-primary-600 text-white px-4 py-2 rounded">Copy</button>
+            </div>
+        <% } %>
+    </main>
+</body>
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        alert("Link copied to clipboard!");
+    }
+</script>
+</html>

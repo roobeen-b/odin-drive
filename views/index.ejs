@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles/output.css" />
+    <title>Odin Drive</title>
+  </head>
+
+  <body>
+    <%- include("partials/nav") %>
+    <div class="flex flex-col items-center justify-center h-[calc(100vh-70px)]">
+      <h1 class="text-3xl font-bold">Odin Drive</h1>
+      <p class="text-lg">Odin Drive is a file storage service</p>
+      <%= currentUser && "Hello " + currentUser.username %> <%= !currentUser ?
+      "Sign in first to upload files" : "" %> <% if (!currentUser) { %>
+      <div class="flex gap-2 mt-4">
+        <a
+          href="/auth/login"
+          class="p-2 border border-gray-200 rounded bg-blue-500 text-white transition-all ease-in-out hover:bg-blue-600 hover:text-white cursor-pointer"
+          >Login</a
+        >
+        <a
+          href="/auth/register"
+          class="p-2 border border-gray-200 rounded bg-white text-blue-500 transition-all ease-in-out hover:bg-blue-600 hover:text-white cursor-pointer"
+          >Register</a
+        >
+      </div>
+      <% } %> <% if (currentUser) { %>
+      <div class="flex gap-2 mt-4">
+        <a
+          href="/folders"
+          class="p-2 border border-gray-200 rounded bg-blue-500 text-white transition-all ease-in-out hover:bg-blue-600 hover:text-white cursor-pointer"
+          >View Folders</a
+        >
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>

@@ -49,6 +49,9 @@ const viewSharedFolder = async (req: Request, res: Response) => {
     if (!shareLink) {
       return res.status(404).json({ message: "Share link not found." });
     }
+    if (shareLink.expiresAt < new Date()) {
+      return res.status(401).json({ message: "Share link expired." });
+    }
     const folder = await getSingleFolder(shareLink.folderId);
     if (!folder) {
       return res.status(404).json({ message: "Folder not found." });

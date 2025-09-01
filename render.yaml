@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: odin-drive-backend
+    env: node
+    repo: https://github.com/roobeen-b/odin-drive
+    branch: main
+    buildCommand: npm install && npm run build && cp -r ./views dist/views
+    startCommand: npm run start
+    preDeployCommand: npm run prisma:migrate
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
